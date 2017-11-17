@@ -1,0 +1,17 @@
+﻿<h2>Welcome to ASP.NET MVC @ViewData["Version"] on @ViewData["Runtime"]!</h2>
+<form action="./Home/Login">
+  <ul>
+    <li>
+      <label>Benutzer</label>
+      <input type="text" name="username" class="form-control">
+    </li>
+    <li>
+      <label>Passwort</label>
+      <input type="password" name="password" class="form-control">
+    </li>
+    <li>
+	    <input type="checkbox" name="stay_logged_in" class="form-control">
+		<button type="submit" class="btn btn-primary">Login</button>
+    </li>
+  </ul>
+</form>
