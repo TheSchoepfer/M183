@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabDatabases", "LabDatabases\LabDatabases.csproj", "{0090842E-0BD6-459D-8456-FAE3840D34AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabDatabases.Tests", "LabDatabases.Tests\LabDatabases.Tests.csproj", "{1F0CCD5B-DB18-4F43-B6DE-F72249ABE542}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0090842E-0BD6-459D-8456-FAE3840D34AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0090842E-0BD6-459D-8456-FAE3840D34AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0090842E-0BD6-459D-8456-FAE3840D34AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0090842E-0BD6-459D-8456-FAE3840D34AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F0CCD5B-DB18-4F43-B6DE-F72249ABE542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F0CCD5B-DB18-4F43-B6DE-F72249ABE542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F0CCD5B-DB18-4F43-B6DE-F72249ABE542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F0CCD5B-DB18-4F43-B6DE-F72249ABE542}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
