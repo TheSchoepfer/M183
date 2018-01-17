@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html class="no-js" lang ""
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>Cesar Cipher</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <br />
+                    <legend>Plaintext</legend>
+                    <textarea id="plaintext" class="form-control"></textarea><br />
+                    <button class="btn btn-primary" id="analyze_plaintext">Analyze Plaintext</button><br />
+                    <button class="btn btn-primary" id="encrypt">encrypt</button> using shift <input name="shift" id="shift" value="" type="text" />
+                </div>
+                <div class="col-md-6">
+                    <br />
+                    <legend>Histogram Plaintext</legend>
+                    <div id="chart_plaintext"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <br /><br />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <br />
+                    <legend>Ciphertext</legend>
+                    <textarea id="plaintext" class="form-control"></textarea><br />
+                    <button class="btn btn-primary" id="analyze_plaintext">Analyze Plaintext</button><br />
+                    <button class="btn btn-primary" id="decrypt">decrypt</button> using backshift <input name="backshift" id="backshift" value="" type="text" />
+                </div>
+                <div class="col-md-6">
+                    <br />
+                    <legend>Histogram Plaintext</legend>
+                    <div id="chart_ciphertext"></div>
+                </div>
+            </div>
+
+        </div>
+        <script>
+			document.getElementById("analyze_plaintext").addEventListener("click", function(e) {
+                e.preventDefault();
+			    e.stopPropagation();
+
+			    var text = document.getElementById("plaintext").value;
+			    var shift = document.getElementById("shift").value;
+
+                document.getElementById("ciphertext").innerHTML = createAlphabeticalShift(plaintext, shift);
+			});
+		</script>
+    </body>
