@@ -78,6 +78,7 @@ namespace MiniBlog.Controllers
             if (Token == "Scheyss")
                 {
                 ViewBag.Message = "Gratuliere";
+                ViewBag.SuccessMessage = "Got it";
                 }
             else
 			    {
