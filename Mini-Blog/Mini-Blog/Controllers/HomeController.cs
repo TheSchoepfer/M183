@@ -71,7 +71,7 @@ namespace MiniBlog.Controllers
 			return View();
 		}
 		[HttpPost]
-		public void TokenLogin()
+		public ActionResult UserDashboard()
 		{
             var Token = Request["token"];
 
@@ -82,15 +82,15 @@ namespace MiniBlog.Controllers
             else
 			    {
                 ViewBag.Message = "Try Again";
-
+                //'sadasd'
 				}
-           
-        }
+			return View();
+		}
         /// <summary>
         /// Die Posts des bestimmten Users laden
         /// </summary>
         /// <returns></returns>
-        public ActionResult UserDashboard()
+        public ActionResult UserDashboard2()
         {
             //DB connection
             SqlConnection con = new SqlConnection();
