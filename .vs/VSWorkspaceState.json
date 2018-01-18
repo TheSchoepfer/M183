@@ -1,8 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Mini-Blog"
+    "\\Mini-Blog",
+    "\\Mini-Blog\\Mini-Blog",
+    "\\Mini-Blog\\Mini-Blog\\Database",
+    "\\Mini-Blog\\Mini-Blog\\Models",
+    "\\Mini-Blog\\Mini-Blog\\Views\\Home"
   ],
-  "SelectedNode": "\\Mini-Blog\\Mini-Blog.sln",
+  "SelectedNode": "\\Mini-Blog\\Mini-Blog\\Models",
   "PreviewInSolutionExplorer": false
 }

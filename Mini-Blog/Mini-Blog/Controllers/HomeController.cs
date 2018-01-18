@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -85,5 +86,44 @@ namespace MiniBlog.Controllers
 				}
            
         }
+        /// <summary>
+        /// Die Posts des bestimmten Users laden
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UserDashboard()
+        {
+            //DB connection
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\vognstrl\source\repos\M183\Mini-Blog\Mini-Blog\Database\miniBlogDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+
+            
+            int currentUserId = 0; //Get current UserId
+
+            //Get All Posts where Post.user_id == User.Id
+            cmd.CommandText = "SELECT title ,description ,content ,createdon ,modifiedon FROM dbo.Post WHERE user_id=" + currentUserId.ToString();
+            reader = cmd.ExecuteReader();
+            List<Models.Post> Posts = new List<Models.Post>();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    Posts.Add(new Models.Post { Title = reader.GetString(1), Content = reader.GetString(3), Description = reader.GetString(2), Id = reader.GetInt32(0), Createdon = reader.GetDateTime(4), Modifiedon = reader.GetDateTime(5) });
+                }
+            }
+            else
+            {
+                //Meldung oder Ähnliches abgeben dass noch kein Post vorhanden ist. --> NICE TO HAVE
+            }
+
+            //Create new Model, and fill in db informations
+            Models.DashboardModel ViewDashboardModel = new Models.DashboardModel();
+            ViewDashboardModel.Postlist = Posts;
+
+            //Send Model to UserDashboardView
+            return View();
+        }
+
     }
 }
