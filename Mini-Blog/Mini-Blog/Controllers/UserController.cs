@@ -12,16 +12,7 @@ namespace MiniBlog.Controllers
 		public ActionResult Dashboard()
 		{
 			var current_user = (string)Session["username"];
-			//var user_roles = MvcApplication.UserRoles;
-			//var user_role = (string)user_roles[current_user];
-
-			//if (user_role == "Administrator")
-			//{
-			//Grant Access
-			//}
-			//  else
-			//  {
-			//      return RedirectToAction("Index", "Home");
+			return RedirectToAction("Index", "Home");
 			//  }
 			return View();
 		}
