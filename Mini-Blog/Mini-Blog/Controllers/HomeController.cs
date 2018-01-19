@@ -48,6 +48,7 @@ namespace MiniBlog.Controllers
 			reader = command.ExecuteReader(); 
 
 			int ID = new int();
+            int UserId = new int();
 			string Username = String.Empty;
 			string Password = String.Empty;
 			string Role = String.Empty;
@@ -115,8 +116,7 @@ namespace MiniBlog.Controllers
 			}
 			else if (username == "user" && password == "test")
 			{
-
-
+				
 			}
 
 			return View();
@@ -127,19 +127,14 @@ namespace MiniBlog.Controllers
 			return View();
 		}
 
-
-
-
-
-
 		[HttpPost]
-		public ActionResult TokenCheck()
+		public ActionResult CheckofToken()
 		{
 			var username = Session["SessionUsername"].ToString();
 			var password = Session["SessionPassword"].ToString();
 			var secretToken = Request["token"];
 
-			string ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB ; AttachDbFilename = /Users/schoepfer/Documents/GitHub/M183/M183/Mini-Blog/Mini-Blog/Database/miniBlogDB; Integrated Security = True; Connect Timeout = 30";
+			string ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB;AttachDbFilename=/Users/schoepfer/Documents/GitHub/M183/M183/Mini-Blog/Mini-Blog/Database/miniBlogDB; Integrated Security = True; Connect Timeout = 30";
 			SqlConnection connection = new SqlConnection(ConnectionString);
 
 			connection.Open();
@@ -193,7 +188,29 @@ namespace MiniBlog.Controllers
 			if ((TimeDate - ExpirationDate).TotalMinutes < 5)
 			{
 
-				//Session["SessionUsername"] = "user";
+				Session["SessionUsername"] = "User";
+				int UserId = Convert.ToInt32(reader["UserId"]);
+
+				//Get All Posts where Post.user_id == User.Id
+				command.CommandText = "SELECT [Title] ,[Description] ,[Content] ,[CreateOn] ,[Title], [ModifiedOn] FROM dbo.Post WHERE [UserId]=" + UserId.ToString();
+				reader = command.ExecuteReader();
+				List<Models.Post> Posts = new List<Models.Post>();
+				if (reader.HasRows)
+				{
+					while (reader.Read())
+					{
+						Posts.Add(new Models.Post { Title = reader.GetString(1), Content = reader.GetString(3), Description = reader.GetString(2), Id = reader.GetInt32(0), Createdon = reader.GetDateTime(4), Modifiedon = reader.GetDateTime(5) });
+					}
+				}
+				else
+				{
+					//Meldung oder Ähnliches abgeben dass noch kein Post vorhanden ist. --> NICE TO HAVE
+				}
+
+				//Create new Model, and fill in db informations
+				Models.DashboardModel ViewDashboardModel = new Models.DashboardModel();
+				ViewDashboardModel.Postlist = Posts;
+
 				return RedirectToAction("Dashboard", "User");
 			}
 			else
@@ -209,37 +226,37 @@ namespace MiniBlog.Controllers
         /// <returns></returns>
         public ActionResult UserDashboard4()
         {
-            //DB connection
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\vognstrl\source\repos\M183\Mini-Blog\Mini-Blog\Database\miniBlogDB.mdf;Integrated Security=True;Connect Timeout=30";
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+			//DB connection
+			SqlConnection con = new SqlConnection();
+			con.ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=/Users/schoepfer/Documents/GitHub/M183/M183/Mini-Blog/Mini-Blog/Database/miniBlogDB.mdf;Integrated Security=True;Connect Timeout=30";
+			SqlCommand cmd = new SqlCommand();
+			SqlDataReader reader;
 
-            
-            int currentUserId = 0; //Get current UserId
 
-            //Get All Posts where Post.user_id == User.Id
-            cmd.CommandText = "SELECT title ,description ,content ,createdon ,modifiedon FROM dbo.Post WHERE user_id=" + currentUserId.ToString();
-            reader = cmd.ExecuteReader();
-            List<Models.Post> Posts = new List<Models.Post>();
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    Posts.Add(new Models.Post { Title = reader.GetString(1), Content = reader.GetString(3), Description = reader.GetString(2), Id = reader.GetInt32(0), Createdon = reader.GetDateTime(4), Modifiedon = reader.GetDateTime(5) });
-                }
-            }
-            else
-            {
-                //Meldung oder Ähnliches abgeben dass noch kein Post vorhanden ist. --> NICE TO HAVE
-            }
+			int currentUserId = Request["UserId"]; //Get current UserId
 
-            //Create new Model, and fill in db informations
-            Models.DashboardModel ViewDashboardModel = new Models.DashboardModel();
-            ViewDashboardModel.Postlist = Posts;
+			//Get All Posts where Post.user_id == User.Id
+			cmd.CommandText = "SELECT title ,description ,content ,createdon ,modifiedon FROM dbo.Post WHERE [UserId]=" + currentUserId.ToString();
+			reader = cmd.ExecuteReader();
+			List<Models.Post> Posts = new List<Models.Post>();
+			if (reader.HasRows)
+			{
+				while (reader.Read())
+				{
+					Posts.Add(new Models.Post { Title = reader.GetString(1), Content = reader.GetString(3), Description = reader.GetString(2), Id = reader.GetInt32(0), Createdon = reader.GetDateTime(4), Modifiedon = reader.GetDateTime(5) });
+				}
+			}
+			else
+			{
+				//Meldung oder Ähnliches abgeben dass noch kein Post vorhanden ist. --> NICE TO HAVE
+			}
 
-            //Send Model to UserDashboardView
-            return View();
+			//Create new Model, and fill in db informations
+			Models.DashboardModel ViewDashboardModel = new Models.DashboardModel();
+			ViewDashboardModel.Postlist = Posts;
+
+			//Send Model to UserDashboardView
+			return View();
         }
 
     }
