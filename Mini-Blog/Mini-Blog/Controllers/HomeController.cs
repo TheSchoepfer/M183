@@ -27,24 +27,61 @@ namespace MiniBlog.Controllers
 		[HttpPost]
 		public ActionResult Login()
 		{
-			// Replacee all UPPERCASE Variables with custom variables
-
 			var username = Request["username"];
 			var password = Request["password"];
-			
+			Random random = new Random();
+			int token = random.Next(1001, 9999);
 
-			if (username == "test" && password == "test")
+			//SQL DB abfrage
+            string ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB ; AttachDbFilename = /Users/schoepfer/Documents/GitHub/M183/M183/Mini-Blog/Mini-Blog/Database/miniBlogDB; Integrated Security = True; Connect Timeout = 30";
+			SqlConnection connection = new SqlConnection(ConnectionString);
+
+			connection.Open();
+
+			SqlCommand command = new SqlCommand();
+			SqlDataReader reader;
+
+            //Sucht nach Benutzern mit den eingegebenen Daten
+			command.CommandText = "SELECT [Id], [Username], [Password], [Role] FROM [dbo].[User] WHERE [Username] = '" + username + "' AND [Password] = '" + password + "'";
+			command.Connection = connection;
+
+			reader = command.ExecuteReader(); 
+
+			int ID = new int();
+			string Username = String.Empty;
+			string Password = String.Empty;
+			string Role = String.Empty;
+
+
+			if (reader.HasRows)
 			{
-                var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create("https://rest.nexmo.com/sms/json");
+				//Die Werte, welche in der Datenbank stehen auslesen
+				while (reader.Read())
+				{
+					ID = Convert.ToInt32(reader["Id"]);
+					Username = Convert.ToString(reader["Username"]);
+					Password = Convert.ToString(reader["Password"]);
+					Role = Convert.ToString(reader["Role"]);
+				}
+				var request = (HttpWebRequest)WebRequest.Create("https://rest.nexmo.com/sms/json");
 
-                var secret = "Scheyss";
+				//Session starten
+				Session["SessionUsername"] = Username;
+				Session["SessionPassword"] = Password;
+				var secretToken = Convert.ToString(token);
+				DateTime Time = DateTime.Now;
+				string TimeDate = Time.ToString();
 
+				//Das Token abspeichern
+				command.CommandText = "INSERT INTO [dbo].[Token] ([UserId], [Token], [Expiry], [DeletedOn] ) VALUES (" + ID + ", '" + secretToken + "', '" + TimeDate + "', 0 )";
+				//command.ExecuteNonQuery();
 
+                //Das Token wird via SMS an den Empfänger versendet
 				var postData = "api_key=83e6f623";
-				postData += "&api_secret=c93bd5200ff97093";
+				postData += "&api_secret=25a086b15fa31600";
 				postData += "&to=41799476139";
 				postData += "&from=\"\"NEXMO\"\"";
-				postData += "&text=\"" + secret + "\"";
+				postData += "&text=\"" + secretToken + "\"";
 				var data = Encoding.ASCII.GetBytes(postData);
 
 				request.Method = "POST";
@@ -62,31 +99,110 @@ namespace MiniBlog.Controllers
 
 				ViewBag.Message = responseString;
 
-				//return RedirectToAction("Login", "Home");
+				return RedirectToAction("LoginToken", "Home");
 			}
 			else
 			{
 				ViewBag.Message = "Wrong Credentials";
 			}
-			return View();
-		}
-		[HttpPost]
-		public ActionResult UserDashboard()
-		{
-            var Token = Request["token"];
 
-            if (Token == "Scheyss")
-                {
-                ViewBag.Message = "Gratuliere";
-                ViewBag.SuccessMessage = "Got it";
-                }
-            else
-			    {
-                ViewBag.Message = "Try Again";
-                //'sadasd'
-				}
+            //Das Admin Login
+			if (username == "admin" && password == "test")
+			{
+				Session["username"] = "admin";
+
+				return RedirectToAction("Dashboard", "Admin");
+			}
+			else if (username == "user" && password == "test")
+			{
+
+
+			}
+
 			return View();
 		}
+
+		public ActionResult TokenLogin()
+		{
+			return View();
+		}
+
+
+
+
+
+
+		[HttpPost]
+		public ActionResult TokenCheck()
+		{
+			var username = Session["SessionUsername"].ToString();
+			var password = Session["SessionPassword"].ToString();
+			var secretToken = Request["token"];
+
+			string ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB ; AttachDbFilename = /Users/schoepfer/Documents/GitHub/M183/M183/Mini-Blog/Mini-Blog/Database/miniBlogDB; Integrated Security = True; Connect Timeout = 30";
+			SqlConnection connection = new SqlConnection(ConnectionString);
+
+			connection.Open();
+
+			SqlCommand command = new SqlCommand();
+			SqlDataReader reader;
+
+			command.CommandText = "SELECT [Id] FROM [dbo].[User] WHERE [Username] = '" + username + "' AND [Password] = '" + password + "'";
+			command.Connection = connection;
+			reader = command.ExecuteReader();
+
+			int ID = new int();
+
+
+			if (reader.HasRows)
+			{
+				//Get the Values
+				while (reader.Read())
+				{
+					ID = Convert.ToInt32(reader["Id"]);
+				}
+			}
+			if (reader != null)
+			{
+				reader.Close();
+			}
+
+			command = new SqlCommand();
+			command.CommandText = "SELECT [Token], [Expiry] FROM [dbo].[Token] WHERE [Id] = " + ID + " AND [DeletedOn] = 'false' AND [Token] = " + secretToken + " ";
+			command.Connection = connection;
+			reader = command.ExecuteReader();
+
+			DateTime ExpirationDate = DateTime.Now;
+
+			if (reader.HasRows)
+			{
+				while (reader.Read())
+				{
+					ExpirationDate = Convert.ToDateTime(reader["Expiry"]);
+				}
+			}
+			if (reader != null)
+			{
+				reader.Close();
+			}
+
+			//DateTime expiryDate = DateTime.ParseExact(expiry, "dd.MM.yy hh:mm:ss", CultureInfo.InvariantCulture);
+			DateTime TimeDate = DateTime.Now;
+			//Check DateTime
+
+			if ((TimeDate - ExpirationDate).TotalMinutes < 5)
+			{
+
+				//Session["SessionUsername"] = "user";
+				return RedirectToAction("Dashboard", "User");
+			}
+			else
+			{
+				ViewBag.Message = "Wrong Token";
+				return RedirectToAction("Index", "Home");
+			}
+		}
+
         /// <summary>
         /// Die Posts des bestimmten Users laden
         /// </summary>
